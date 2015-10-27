@@ -20,17 +20,21 @@ pygame.display.set_caption('Mandelbrot')
 
 clock = pygame.time.Clock()
 
-mincoords = (-2.5,-1)
-maxcoords = (1,1)
+minx = -2.5
+miny = -1
+width = 3.5
+height = 2
 
 def getcoords(i,j):
-	a = (i / 896.0)*3-2.5
-	b = ((512-j)/512)*2-1
+	a = (i / 896.0)*width+minx
+	b = ((512-j)/512)*height+miny
 	return (a,b)
 
 running = True
 
-surface = pygame.display.get_surface()
+disps = pygame.display.get_surface()
+surface = pygame.Surface((896,512),0)
+intermediate = pygame.Surface((896,512),0)
 
 imajor = 0
 jmajor = 0
@@ -45,12 +49,12 @@ surface.lock()
 while running:
 	
 	for ebuddy in pygame.event.get():
-		if hasattr(ebuddy, 'key'):
+		if ebuddy.type == pygame.key:
 			if ebuddy.key ==pygame.K_ESCAPE:
 				running = False
 		elif ebuddy.type == pygame.QUIT:
 			running = False
-	if blocksize >= 1 :
+	if blocksize >= 1:
 		if blocksize != 64 and imajor%2==0 and jmajor%2 ==0:
 			skip = True
 		else:
@@ -70,20 +74,27 @@ while running:
 			fcol = (colour,colour,colour)
 			for a in range(blocksize):
 				for b in range(blocksize):
-					pygame.gfxdraw.pixel(surface,i+a,j+b,fcol)
+					surface.set_at((i+a,j+b),fcol)
+					#pygame.gfxdraw.pixel(surface,i+a,j+b,fcol)
 		imajor+=1
 		if imajor>=ibound:
 			imajor = 0
 			jmajor+=1
 			if jmajor>=jbound:
 				jmajor = 0
+				print('%s done.'%(blocksize))
 				blocksize = blocksize>>1
 				if blocksize == 0:
 					surface.unlock()
+					intermediate.blit(surface,(0,0),None,0)
+					disps.blit(intermediate,(0,0),None,0)
+					pygame.display.update()
 					continue
 				ibound = round(896/blocksize)
 				jbound = round(512/blocksize)
 				surface.unlock()
+				intermediate.blit(surface,(0,0),None,0)
+				disps.blit(intermediate,(0,0),None,0)
 				pygame.display.update()
 				surface.lock()
 	else:
