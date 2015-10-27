@@ -49,27 +49,35 @@ while running:
 		elif ebuddy.type == pygame.QUIT:
 			running = False
 	if blocksize >= 1 :
-		i = blocksize*imajor
-		j = blocksize*jmajor
-		(x,y) = getcoords(i,j)
-		count = mandelbrot(x,y)
-		colour = round(count/4)
-		if colour < 0:
-			colour = 0
-		if colour > 255:
-			colour = 255
-		colour = 255 - colour
-		fcol = (colour,colour,colour)
-		for a in range(blocksize):
-			for b in range(blocksize):
-				pygame.gfxdraw.pixel(surface,i+a,j+b,fcol)
+		if blocksize != 64 and imajor%2==0 and jmajor%2 ==0:
+			skip = True
+		else:
+			skip = False
+		
+		if not skip:
+			i = blocksize*imajor
+			j = blocksize*jmajor
+			(x,y) = getcoords(i,j)
+			count = mandelbrot(x,y)
+			colour = round(count/4)
+			if colour < 0:
+				colour = 0
+			if colour > 255:
+				colour = 255
+			colour = 255 - colour
+			fcol = (colour,colour,colour)
+			for a in range(blocksize):
+				for b in range(blocksize):
+					pygame.gfxdraw.pixel(surface,i+a,j+b,fcol)
 		imajor+=1
 		if imajor>=ibound:
 			imajor = 0
 			jmajor+=1
 			if jmajor>=jbound:
 				jmajor = 0
-				blocksize = round(blocksize / 2)
+				blocksize = blocksize>>1
+				if blocksize == 0:
+					continue
 				ibound = round(896/blocksize)
 				jbound = round(512/blocksize)
 	else:
