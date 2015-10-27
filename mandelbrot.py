@@ -40,6 +40,8 @@ blocksize = 64;
 ibound = round(896/blocksize)
 jbound = round(512/blocksize)
 
+surface.lock()
+
 while running:
 	
 	for ebuddy in pygame.event.get():
@@ -77,11 +79,15 @@ while running:
 				jmajor = 0
 				blocksize = blocksize>>1
 				if blocksize == 0:
+					surface.unlock()
 					continue
 				ibound = round(896/blocksize)
 				jbound = round(512/blocksize)
+				surface.unlock()
+				pygame.display.update()
+				surface.lock()
 	else:
 		clock.tick(30)
-	pygame.display.update()
+		pygame.display.update()
 pygame.quit()
 quit()
