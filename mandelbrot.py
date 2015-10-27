@@ -35,12 +35,10 @@ surface = pygame.display.get_surface()
 imajor = 0
 jmajor = 0
 
-ibound = 56
-jbound = 32
-irange = round(896/ibound)
-jrange = round(512/jbound)
-
 blocksize = 64;
+
+ibound = round(896/blocksize)
+jbound = round(512/blocksize)
 
 while running:
 	
@@ -51,27 +49,29 @@ while running:
 		elif ebuddy.type == pygame.QUIT:
 			running = False
 	if blocksize >= 1 :
-		for iminor in range(irange):
-			for jminor in range(jrange):
-				i = irange*imajor + iminor
-				j = jrange*jmajor + jminor
-				(x,y) = getcoords(i,j)
-				count = mandelbrot(x,y)
-				colour = round(count/4)
-				if colour < 0:
-					colour = 0
-				if colour > 255:
-					colour = 255
-				colour = 255 - colour
-				fcol = (colour,colour,colour)
-				pygame.gfxdraw.pixel(surface,i,j,fcol)
+		i = blocksize*imajor
+		j = blocksize*jmajor
+		(x,y) = getcoords(i,j)
+		count = mandelbrot(x,y)
+		colour = round(count/4)
+		if colour < 0:
+			colour = 0
+		if colour > 255:
+			colour = 255
+		colour = 255 - colour
+		fcol = (colour,colour,colour)
+		for a in range(blocksize):
+			for b in range(blocksize):
+				pygame.gfxdraw.pixel(surface,i+a,j+b,fcol)
 		imajor+=1
 		if imajor>=ibound:
 			imajor = 0
 			jmajor+=1
 			if jmajor>=jbound:
 				jmajor = 0
-				blocksize = blocksize / 2
+				blocksize = round(blocksize / 2)
+				ibound = round(896/blocksize)
+				jbound = round(512/blocksize)
 	else:
 		clock.tick(30)
 	pygame.display.update()
