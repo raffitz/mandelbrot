@@ -1,3 +1,4 @@
+import math
 import pygame
 import pygame.gfxdraw
 
@@ -14,7 +15,10 @@ def mandelbrot(x,y):
 
 pygame.init()
 
-gameDisp = pygame.display.set_mode((896,512))
+pxwidth = 896
+pxheight = 512
+
+gameDisp = pygame.display.set_mode((pxwidth,pxheight))
 
 pygame.display.set_caption('Mandelbrot')
 
@@ -32,23 +36,23 @@ cursor2x = 0
 cursor2y = 0
 
 def getcoords(i,j):
-	a = (i / 896.0)*width+minx
-	b = ((512-j)/512)*height+miny
+	a = (i / pxwidth)*width+minx
+	b = ((pxheight-j)/pxheight)*height+miny
 	return (a,b)
 
 running = True
 
 disps = pygame.display.get_surface()
-surface = pygame.Surface((896,512),0)
-intermediate = pygame.Surface((896,512),0)
+surface = pygame.Surface((pxwidth,pxheight),0)
+intermediate = pygame.Surface((pxwidth,pxheight),0)
 
 imajor = 0
 jmajor = 0
 
 blocksize = 64
 
-ibound = round(896/blocksize)
-jbound = round(512/blocksize)
+ibound = math.ceil(pxwidth/blocksize)
+jbound = math.ceil(pxheight/blocksize)
 
 surface.lock()
 
@@ -95,8 +99,8 @@ while running:
 			if reset:
 				reset = False
 				blocksize = 64
-				ibound = round(896/blocksize)
-				jbound = round(512/blocksize)
+				ibound = math.ceil(pxwidth/blocksize)
+				jbound = math.ceil(pxheight/blocksize)
 				imajor = 0
 				jmajor = 0
 		elif ebuddy.type == pygame.QUIT:
@@ -115,8 +119,8 @@ while running:
 				width = abs(rx1-rx2)
 				height = abs(ry1-ry2)
 				blocksize = 64
-				ibound = round(896/blocksize)
-				jbound = round(512/blocksize)
+				ibound = math.ceil(pxwidth/blocksize)
+				jbound = math.ceil(pxheight/blocksize)
 				imajor = 0
 				jmajor = 0
 	if blocksize >= 1:
@@ -138,7 +142,11 @@ while running:
 			colour = 255 - colour
 			fcol = (colour,colour,colour)
 			for a in range(blocksize):
+				if i+a > pxwidth:
+					break
 				for b in range(blocksize):
+					if j+b > pxheight:
+						break
 					surface.set_at((i+a,j+b),fcol)
 					#pygame.gfxdraw.pixel(surface,i+a,j+b,fcol)
 		imajor+=1
@@ -155,8 +163,8 @@ while running:
 					disps.blit(intermediate,(0,0),None,0)
 					pygame.display.update()
 					continue
-				ibound = round(896/blocksize)
-				jbound = round(512/blocksize)
+				ibound = math.ceil(pxwidth/blocksize)
+				jbound = math.ceil(pxheight/blocksize)
 				surface.unlock()
 				intermediate.blit(surface,(0,0),None,0)
 				disps.blit(intermediate,(0,0),None,0)
