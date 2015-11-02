@@ -18,16 +18,24 @@ pygame.init()
 pxwidth = 896
 pxheight = 512
 
-gameDisp = pygame.display.set_mode((pxwidth,pxheight))
+gameDisp = pygame.display.set_mode((pxwidth,pxheight),pygame.RESIZABLE)
 
 pygame.display.set_caption('Mandelbrot')
 
 clock = pygame.time.Clock()
 
-minx = -2.5
-miny = -1
-width = 3.5
-height = 2
+stdratio = 7/4
+
+stdminx = -2.5
+stdminy = -1
+stdwidth = 3.5
+stdheight = 2
+
+
+minx = stdminx
+miny = stdminy
+width = stdwidth
+height = stdheight
 
 cursor1x = 0
 cursor1y = 0
@@ -56,34 +64,27 @@ jbound = math.ceil(pxheight/blocksize)
 
 surface.lock()
 
-reset = False
-
 while running:
 	
 	for ebuddy in pygame.event.get():
 		if ebuddy.type == pygame.KEYDOWN:
+			reset = False
 			if ebuddy.key ==pygame.K_ESCAPE:
 				running = False
 			elif ebuddy.key == pygame.K_BACKSPACE:
-				minx = -2.5
-				miny = -1.0
-				width = 3.5
-				height = 2.0
+				minx = stdminx
+				miny = stdminy
+				width = stdwidth
+				height = stdheight
 				reset = True
 			elif ebuddy.key == pygame.K_SPACE:
 				ratio = width/height
-				if ratio<7/4:
-					width = height*(7/4)
+				if ratio<stdratio:
+					width = height*stdratio
 					reset = True
-				elif ratio>7/4:
-					height = (4/7)*width
+				elif ratio>stdratio:
+					height = stdratio*width
 					reset = True
-			elif ebuddy.key == pygame.K_MINUS:
-				minx = minx - width/2
-				miny = miny - height/2
-				width = width*2
-				height = height*2
-				reset = True
 			elif ebuddy.key == pygame.K_MINUS:
 				minx = minx - width/2
 				miny = miny - height/2
@@ -123,6 +124,35 @@ while running:
 				jbound = math.ceil(pxheight/blocksize)
 				imajor = 0
 				jmajor = 0
+		elif ebuddy.type == pygame.VIDEORESIZE:
+			pxwidth = ebuddy.w
+			pxheight = ebuddy.h
+			surface.unlock()
+			del surface
+			del intermediate
+			surface = pygame.Surface((pxwidth,pxheight),0)
+			intermediate = pygame.Surface((pxwidth,pxheight),0)
+			gameDisp = pygame.display.set_mode((pxwidth,pxheight),pygame.RESIZABLE)
+			surface.lock()
+			print('resize: %s %s'%(pxwidth,pxheight))
+			blocksize = 64
+			ibound = math.ceil(pxwidth/blocksize)
+			jbound = math.ceil(pxheight/blocksize)
+			imajor = 0
+			jmajor = 0
+			stdratio = pxwidth / pxheight
+			ratio = 3.5/2
+			if ratio<stdratio:
+				stdheight = 2
+				stdwidth = 2*stdratio
+				stdminy = -1
+				stdminx = (-2.5/3.5)*stdwidth
+			elif ratio>stdratio:
+				stdwidth = 3.5
+				stdheight = stdratio*3.5
+				stdminx = -2.5
+				stdminy = (-0.5)*stdheight
+			
 	if blocksize >= 1:
 		if blocksize != 64 and imajor%2==0 and jmajor%2 ==0:
 			skip = True
@@ -167,11 +197,11 @@ while running:
 				jbound = math.ceil(pxheight/blocksize)
 				surface.unlock()
 				intermediate.blit(surface,(0,0),None,0)
+				surface.lock()
 				disps.blit(intermediate,(0,0),None,0)
 				if cursorenabled:
 					disps.set_at((cursor1x,cursor1y),(255,0,0))
 				pygame.display.update()
-				surface.lock()
 	else:
 		clock.tick(30)
 		disps.blit(intermediate,(0,0),None,0)
