@@ -7,6 +7,7 @@ Essentially, it displays a picture of the Mandelbrot set.
 ## Requirements
 
 Python 3
+
 pygame
 
 ## Instructions
