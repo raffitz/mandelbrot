@@ -122,9 +122,11 @@ while running:
 				if fullscreen:
 					fullscreen = False
 
-					gameDisp = pygame.display.set_mode((896,512),pygame.RESIZABLE)
+					gameDisp = pygame.display.set_mode((oldw,oldh),pygame.RESIZABLE)
 				else:
 					fullscreen = True
+					oldw = pxwidth
+					oldh = pxheight
 					modes = pygame.display.list_modes()
 					gameDisp = pygame.display.set_mode(modes[0],pygame.FULLSCREEN)
 				disps = pygame.display.get_surface()
