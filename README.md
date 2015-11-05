@@ -21,3 +21,5 @@ Plus key zooms in, minus key zooms out.
 Backspace key shows you the startup render.
 
 Left clicking sets up a cursor. When you right click after the cursor is set, you will box zoom on that area.
+
+F11 toggles fullscreen.
