@@ -16,6 +16,8 @@ def mandelbrot(x,y):
 	return count
 
 # Initializing pygame and opening a window:
+fullscreen = False
+
 pygame.init()
 
 pxwidth = 896
@@ -114,6 +116,35 @@ while running:
 				width = width/2
 				height = height/2
 				reset = True
+			elif ebuddy.key == pygame.K_F11:
+				# Toggling fullscreen
+				reset = True
+				if fullscreen:
+					fullscreen = False
+
+					gameDisp = pygame.display.set_mode((896,512),pygame.RESIZABLE)
+				else:
+					fullscreen = True
+					modes = pygame.display.list_modes()
+					gameDisp = pygame.display.set_mode(modes[0],pygame.FULLSCREEN)
+				disps = pygame.display.get_surface()
+				pxwidth,pxheight = disps.get_size()
+				
+				surface = pygame.Surface((pxwidth,pxheight),0)
+				intermediate = pygame.Surface((pxwidth,pxheight),0)
+				
+				stdratio = pxwidth / pxheight
+				ratio = 3.5/2
+				if ratio<stdratio:
+					stdheight = 2
+					stdwidth = 2*stdratio
+					stdminy = -1
+					stdminx = (-2.5/3.5)*stdwidth
+				elif ratio>stdratio:
+					stdwidth = 3.5
+					stdheight = stdratio*3.5
+					stdminx = -2.5
+					stdminy = (-0.5)*stdheight
 			if reset:
 				# Stop current render and restart based on new coordinates
 				reset = False
@@ -158,6 +189,7 @@ while running:
 			surface = pygame.Surface((pxwidth,pxheight),0)
 			intermediate = pygame.Surface((pxwidth,pxheight),0)
 			gameDisp = pygame.display.set_mode((pxwidth,pxheight),pygame.RESIZABLE)
+			disps = pygame.display.get_surface()
 			surface.lock()
 			
 			# Debug message:
